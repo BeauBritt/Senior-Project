@@ -1,0 +1,79 @@
+import os
+from PIL import Image, ImageDraw, ImageFont
+import matplotlib.pyplot as plt
+
+def create_player_card(player_data):
+    position_map = {
+        "G": "Guard",
+        "PG": "Point Guard",
+        "F": "Forward",
+        "C": "Center"
+    }
+    
+    card_width, card_height = 400, 600
+    background_color = (255, 255, 255)
+    text_color = (0, 0, 0)
+    header_color = (0, 0, 139)
+    
+    card = Image.new('RGB', (card_width, card_height), background_color)
+    draw = ImageDraw.Draw(card)
+    
+    try:
+        font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
+        font = ImageFont.truetype(font_path, 20)
+        font_large = ImageFont.truetype(font_path, 30)
+    except OSError:
+        font = ImageFont.load_default()
+        font_large = font
+    
+   
+    draw.rectangle([(0, 0), (card_width, 80)], fill=header_color)
+    name_bbox = draw.textbbox((0, 0), player_data['Player Name'], font=font_large)
+    name_width = name_bbox[2] - name_bbox[0]
+    draw.text(((card_width - name_width) / 2, 20), player_data['Player Name'], fill=(255, 255, 255), font=font_large)
+    
+    
+    team_bbox = draw.textbbox((0, 0), player_data['Team'], font=font)
+    team_width = team_bbox[2] - team_bbox[0]
+    draw.text(((card_width - team_width) / 2, 40), player_data['Team'], fill=(255, 255, 255), font=font)
+    
+    
+    position_full = position_map.get(player_data['Pos'], player_data['Pos'])
+    pos_bbox = draw.textbbox((0, 0), position_full, font=font)
+    pos_width = pos_bbox[2] - pos_bbox[0]
+    draw.text(((card_width - pos_width) / 2, 60), position_full, fill=(255, 255, 255), font=font)
+    
+   
+    draw.text((card_width - 60, 20), str(player_data['OVR_Grade']), fill=(255, 255, 255), font=font_large)
+    
+    
+    image_y_start = 90
+    draw.rectangle([(100, image_y_start), (300, image_y_start + 150)], outline=header_color, width=3)
+    draw.text((150, image_y_start + 60), "Image Here", fill=header_color, font=font)
+    
+    
+    stats_title = "STATS"
+    stats_bbox = draw.textbbox((0, 0), stats_title, font=font)
+    stats_width = stats_bbox[2] - stats_bbox[0]
+    draw.text(((card_width - stats_width) / 2, 270), stats_title, fill=header_color, font=font)
+    
+    
+    draw.text((20, 300), f"PTS: {player_data['PTS']}", fill=text_color, font=font)
+    draw.text((150, 300), f"REB: {player_data['REB']}", fill=text_color, font=font)
+    draw.text((280, 300), f"AST: {player_data['AST']}", fill=text_color, font=font)
+    
+    
+    draw.text((90, 330), f"STL: {player_data['STL']}", fill=text_color, font=font)
+    draw.text((220, 330), f"BLK: {player_data['BLK']}", fill=text_color, font=font)
+    
+    return card
+
+
+import pandas as pd
+file_path = "graded_ncaa_player_stats.csv"
+df = pd.read_csv(file_path)
+player_sample = df.iloc[0].to_dict()
+player_card = create_player_card(player_sample)
+plt.imshow(player_card)
+plt.axis("off")
+plt.show()
