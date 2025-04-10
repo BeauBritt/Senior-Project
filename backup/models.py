@@ -5,7 +5,7 @@ from flask_bcrypt import Bcrypt
 import os
 from dotenv import load_dotenv
 
-# Setup
+
 app = Flask(__name__)
 CORS(app)
 bcrypt = Bcrypt(app)
@@ -17,7 +17,7 @@ client = MongoClient(mongo_url)
 db = client["CBPacks"]
 users = db["Users"]
 
-# ✅ Register Route
+
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -38,7 +38,7 @@ def register():
 
     return jsonify({"message": "User registered successfully"}), 201
 
-# ✅ Login Route
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()

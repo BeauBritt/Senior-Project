@@ -8,7 +8,7 @@ import random
 
 from user_routes import user_bp  
 
-# Setup
+
 app = Flask(__name__)
 CORS(app, supports_credentials=True)
 bcrypt = Bcrypt(app)
@@ -20,10 +20,10 @@ client = MongoClient(mongo_url)
 db = client["CBPacks"]
 player_collection = db["Player Data"]
 
-# Register user routes
+
 app.register_blueprint(user_bp)
 
-# --- Player Packs Route ---
+
 @app.route("/", methods=["GET"])
 def get_players():
     players = list(player_collection.find({}, {"_id": 0}))
@@ -35,6 +35,6 @@ def get_random_players():
     random.shuffle(players)
     return jsonify(players[:5])
 
-# --- Start Server ---
+
 if __name__ == "__main__":
     app.run(debug=True)
