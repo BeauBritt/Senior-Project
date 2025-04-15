@@ -1,26 +1,21 @@
 {
-  "name": "backend",
+  "name": "cbpacks-backend",
+  "version": "1.0.0",
   "type": "module",
+  "main": "dist/index.js",
   "scripts": {
-    "dev": "tsx src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "@hono/node-server": "^1.14.0",
-    "@hono/zod-validator": "^0.4.3",
-    "bcryptjs": "^3.0.2",
-    "dotenv": "^16.5.0",
-    "hono": "^4.7.6",
-    "mongodb": "^6.15.0",
-    "typescript": "^5.8.3",
-    "zod": "^3.24.2"
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.4.0",
+    "hono": "^3.11.4",
+    "mongodb": "^6.5.0",
+    "zod": "^3.22.4",
+    "@hono/zod-validator": "^0.6.3"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.6",
-    "@types/dotenv": "^6.1.1",
-    "@types/mongodb": "^4.0.6",
-    "@types/node": "^20.11.17",
-    "tsx": "^4.7.1"
+    "typescript": "^5.3.3"
   }
 }
