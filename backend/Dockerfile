@@ -1,33 +1,35 @@
-# 1. Base image
-FROM node:20 AS build
+# Use an official Node image as the base for building
+FROM node:20 AS builder
 
-# 2. Set working directory
+# Set the working directory
 WORKDIR /app
 
-# 3. Copy package.json and package-lock.json
+# Copy only the package.json and lock file first for caching
 COPY package*.json ./
 
-# 4. Install dependencies (including devDependencies like typescript)
+# Install all dependencies including TypeScript
 RUN npm install
 
-# 5. Copy the rest of the source code
+# Copy the full source code
 COPY . .
 
-# 6. Build the TypeScript code
+# Compile TypeScript to JavaScript
 RUN npm run build
 
-# 7. Final production image
-FROM node:20 AS production
+# --------------------------
+# Final image for production
+# --------------------------
+FROM node:20
 
 WORKDIR /app
 
-# Only copy what's needed for running the app
+# Copy only production deps
 COPY package*.json ./
 RUN npm install --omit=dev
 
-COPY --from=build /app/dist ./dist
+# Copy built code from builder
+COPY --from=builder /app/dist ./dist
 
-# Copy any assets like .env.production if needed
-# COPY .env.production .env
-
+# Start app
 CMD ["node", "dist/index.js"]
+
