@@ -6,8 +6,10 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "types": ["node"],
     "jsx": "react-jsx",
-    "resolveJsonModule": true,
+    "jsxImportSource": "hono/jsx",
+    "rootDir": "src",
     "outDir": "dist"
   },
   "include": ["src"]
