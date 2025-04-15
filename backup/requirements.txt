@@ -3,4 +3,3 @@ flask-cors
 pymongo
 flask-bcrypt
 python-dotenv
-pip install -r requirements.txt
