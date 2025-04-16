@@ -50,3 +50,38 @@ userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
 
   return c.json({ message: 'Login successful', username }, 200)
 })
+
+// Save Team Route
+userRoutes.post('/save_team', async (c) => {
+  const { username, team, avgOVR } = await c.req.json()
+
+  if (!username || !team || !avgOVR) {
+    return c.json({ error: 'Missing team data' }, 400)
+  }
+
+  const savedTeamsCollection = db.collection('SavedTeams')
+
+  // Save the team with timestamp
+  await savedTeamsCollection.insertOne({
+    username,
+    team,
+    avgOVR,
+    timestamp: new Date(),
+  })
+
+  return c.json({ message: 'Team saved successfully!' }, 200)
+})
+
+// Get Leaderboard
+userRoutes.get('/leaderboard', async (c) => {
+  const savedTeamsCollection = db.collection('SavedTeams')
+
+  const topTeams = await savedTeamsCollection
+    .find({}, { projection: { _id: 0 } })
+    .sort({ avgOVR: -1 })
+    .limit(10)
+    .toArray()
+
+  return c.json(topTeams)
+})
+
