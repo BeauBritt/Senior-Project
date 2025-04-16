@@ -83,3 +83,19 @@ userRoutes.get('/leaderboard', async (c) => {
   return c.json(topTeams);
 });
 
+// Get User's Teams
+userRoutes.get('/user_teams/:username', async (c) => {
+  const username = c.req.param('username');
+  
+  const userTeams = await savedTeamsCollection
+    .find({ username }, { projection: { _id: 0 } })
+    .sort({ timestamp: -1 })
+    .toArray();
+
+  if (!userTeams.length) {
+    return c.json({ error: 'No teams found for this user' }, 404);
+  }
+
+  return c.json(userTeams);
+});
+
