@@ -51,20 +51,21 @@ userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
   return c.json({ message: 'Login successful', username }, 200)
 })
 
+const savedTeamsCollection = db.collection('SavedTeams')
 
-  const savedTeamsCollection = db.collection('SavedTeams')
-
-  // Save Team Route
+// Save Team Route
 userRoutes.post('/save_team', async (c) => {
-  const { username, team, avgOVR } = await c.req.json();
+  const { username, team, avgOVR, players } = await c.req.json();
 
-  if (!username || !team || !avgOVR) {
+  if (!username || !team || !avgOVR || !players) {
     return c.json({ error: 'Missing team data' }, 400);
   }
 
   await savedTeamsCollection.insertOne({
     username,
+    team,
     avgOVR,
+    players,
     timestamp: new Date(),
   });
 

@@ -5,7 +5,7 @@ import bcrypt from 'bcryptjs';
 import { MongoClient } from 'mongodb';
 import { config } from 'dotenv';
 config();
-const mongoUrl = process.env.URL;
+const mongoUrl = process.env.url;
 const client = new MongoClient(mongoUrl);
 const db = client.db('CBPacks');
 const userCollection = db.collection('Users');
@@ -37,4 +37,29 @@ userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
         return c.json({ error: 'Invalid username or password' }, 401);
     }
     return c.json({ message: 'Login successful', username }, 200);
+});
+const savedTeamsCollection = db.collection('SavedTeams');
+// Save Team Route
+userRoutes.post('/save_team', async (c) => {
+    const { username, team, avgOVR, players } = await c.req.json();
+    if (!username || !team || !avgOVR || !players) {
+        return c.json({ error: 'Missing team data' }, 400);
+    }
+    await savedTeamsCollection.insertOne({
+        username,
+        team,
+        avgOVR,
+        players,
+        timestamp: new Date(),
+    });
+    return c.json({ message: 'Team saved successfully!' }, 200);
+});
+// Get Leaderboard
+userRoutes.get('/leaderboard', async (c) => {
+    const topTeams = await savedTeamsCollection
+        .find({}, { projection: { _id: 0, username: 1, avgOVR: 1 } })
+        .sort({ avgOVR: -1 })
+        .limit(10)
+        .toArray();
+    return c.json(topTeams);
 });
