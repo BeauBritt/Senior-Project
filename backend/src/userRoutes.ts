@@ -69,12 +69,9 @@ userRoutes.post('/save_team', async (c) => {
     return c.json({ error: 'Missing team data' }, 400);
   }
 
-  const starPlayers = team.filter(p => p.OVR_Grade >= 78).length;
-
   await savedTeamsCollection.insertOne({
     username,
     avgOVR,
-    stars: starPlayers,
     timestamp: new Date(),
   });
 
@@ -84,11 +81,11 @@ userRoutes.post('/save_team', async (c) => {
 // Get Leaderboard
 userRoutes.get('/leaderboard', async (c) => {
   const topTeams = await savedTeamsCollection
-    .find({}, { projection: { _id: 0, username: 1, avgOVR: 1, stars: 1 } })
-    .sort({ avgOVR: -1, stars: -1 })
+    .find({}, { projection: { _id: 0, username: 1, avgOVR: 1 } })
+    .sort({ avgOVR: -1 })
     .limit(10)
     .toArray();
 
   return c.json(topTeams);
-})
+});
 })
