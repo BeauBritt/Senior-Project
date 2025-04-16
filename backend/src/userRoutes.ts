@@ -51,13 +51,6 @@ userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
   return c.json({ message: 'Login successful', username }, 200)
 })
 
-// Save Team Route
-userRoutes.post('/save_team', async (c) => {
-  const { username, team, avgOVR } = await c.req.json()
-
-  if (!username || !team || !avgOVR) {
-    return c.json({ error: 'Missing team data' }, 400)
-  }
 
   const savedTeamsCollection = db.collection('SavedTeams')
 
@@ -88,4 +81,4 @@ userRoutes.get('/leaderboard', async (c) => {
 
   return c.json(topTeams);
 });
-})
+
