@@ -7,7 +7,7 @@ import { config } from 'dotenv'
 
 config()
 
-const mongoUrl = process.env.URL as string
+const mongoUrl = process.env.url as string
 const client = new MongoClient(mongoUrl)
 const db = client.db('CBPacks')
 const userCollection = db.collection('Users')
