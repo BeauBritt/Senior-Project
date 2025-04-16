@@ -61,27 +61,34 @@ userRoutes.post('/save_team', async (c) => {
 
   const savedTeamsCollection = db.collection('SavedTeams')
 
-  // Save the team with timestamp
+  // Save Team Route
+userRoutes.post('/save_team', async (c) => {
+  const { username, team, avgOVR } = await c.req.json();
+
+  if (!username || !team || !avgOVR) {
+    return c.json({ error: 'Missing team data' }, 400);
+  }
+
+  const starPlayers = team.filter(p => p.OVR_Grade >= 78).length;
+
   await savedTeamsCollection.insertOne({
     username,
-    team,
     avgOVR,
+    stars: starPlayers,
     timestamp: new Date(),
-  })
+  });
 
-  return c.json({ message: 'Team saved successfully!' }, 200)
-})
+  return c.json({ message: 'Team saved successfully!' }, 200);
+});
 
 // Get Leaderboard
 userRoutes.get('/leaderboard', async (c) => {
-  const savedTeamsCollection = db.collection('SavedTeams')
-
   const topTeams = await savedTeamsCollection
-    .find({}, { projection: { _id: 0 } })
-    .sort({ avgOVR: -1 })
+    .find({}, { projection: { _id: 0, username: 1, avgOVR: 1, stars: 1 } })
+    .sort({ avgOVR: -1, stars: -1 })
     .limit(10)
-    .toArray()
+    .toArray();
 
-  return c.json(topTeams)
+  return c.json(topTeams);
 })
-
+})
