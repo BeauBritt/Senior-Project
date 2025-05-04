@@ -1,3 +1,4 @@
+# Import required libraries for web framework, database, and security
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from pymongo import MongoClient
@@ -5,19 +6,19 @@ from flask_bcrypt import Bcrypt
 import os
 from dotenv import load_dotenv
 
-
+# Initialize Flask application with CORS and password hashing
 app = Flask(__name__)
 CORS(app)
 bcrypt = Bcrypt(app)
 
+# Load environment variables and setup MongoDB connection
 load_dotenv()
 mongo_url = os.environ.get("url")
-
 client = MongoClient(mongo_url)
 db = client["CBPacks"]
 users = db["Users"]
 
-
+# Register endpoint: Creates new user with hashed password
 @app.route("/register", methods=["POST"])
 def register():
     data = request.get_json()
@@ -38,7 +39,7 @@ def register():
 
     return jsonify({"message": "User registered successfully"}), 201
 
-
+# Login endpoint: Authenticates user credentials
 @app.route("/login", methods=["POST"])
 def login():
     data = request.get_json()

@@ -5,22 +5,23 @@ import bcrypt from 'bcryptjs'
 import { MongoClient } from 'mongodb'
 import { config } from 'dotenv'
 
+// Initialize environment variables and database connection
 config()
-
 const mongoUrl = process.env.url as string
 const client = new MongoClient(mongoUrl)
 const db = client.db('CBPacks')
 const userCollection = db.collection('Users')
 
+// Create new Hono router instance for user routes
 export const userRoutes = new Hono()
 
-// Schema for validation
+// Define validation schema for authentication requests
 const authSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1),
 })
 
-// Register Route
+// Register endpoint: Creates new user with hashed password
 userRoutes.post('/register', zValidator('json', authSchema), async (c) => {
   const { username, password } = await c.req.json()
 
@@ -39,7 +40,7 @@ userRoutes.post('/register', zValidator('json', authSchema), async (c) => {
   return c.json({ message: 'User registered successfully' }, 201)
 })
 
-// Login Route
+// Login endpoint: Authenticates user credentials
 userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
   const { username, password } = await c.req.json()
 
@@ -51,9 +52,10 @@ userRoutes.post('/login', zValidator('json', authSchema), async (c) => {
   return c.json({ message: 'Login successful', username }, 200)
 })
 
+// Initialize collection for storing user teams
 const savedTeamsCollection = db.collection('SavedTeams')
 
-// Save Team Route
+// Save team endpoint: Stores user's team configuration
 userRoutes.post('/save_team', async (c) => {
   const { username, team, avgOVR, players } = await c.req.json();
 
@@ -72,7 +74,7 @@ userRoutes.post('/save_team', async (c) => {
   return c.json({ message: 'Team saved successfully!' }, 200);
 });
 
-// Get Leaderboard
+// Leaderboard endpoint: Returns top 10 teams by average OVR
 userRoutes.get('/leaderboard', async (c) => {
   const topTeams = await savedTeamsCollection
     .find({}, { projection: { _id: 0, username: 1, avgOVR: 1 } })
@@ -83,7 +85,7 @@ userRoutes.get('/leaderboard', async (c) => {
   return c.json(topTeams);
 });
 
-// Get User's Teams
+// User teams endpoint: Returns all teams for a specific user
 userRoutes.get('/user_teams/:username', async (c) => {
   const username = c.req.param('username');
   
